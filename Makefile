@@ -64,6 +64,8 @@ run: up  ## Set up everything and show logs from local compose
 
 .PHONY: saltbox-run
 saltbox-run:  ## Start saltbox docker-compose and show logs
+	@echo "Creating volume directories for saltbox..."
+	mkdir -p /opt/torrentio-scraper-sh/mongodb /opt/torrentio-scraper-sh/pg_data
 	@echo "Starting containers from saltbox docker-compose.yml and showing logs..."
 	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) up -d
 	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) logs -f -t
@@ -80,6 +82,8 @@ saltbox-restart:  ## Restart all services for saltbox docker-compose
 
 .PHONY: arm-run
 arm-run:  ## Start arm docker-compose and show logs
+	@echo "Creating volume directories..."
+	mkdir -p ./mysql_data ./pg_data
 	@echo "Starting containers from arm docker-compose.yml and showing logs..."
 	$(DOCKER_COMPOSE_CMD) -f $(ARM_COMPOSE_FILE) up -d
 	$(DOCKER_COMPOSE_CMD) -f $(ARM_COMPOSE_FILE) logs -f -t
