@@ -53,8 +53,20 @@ After starting the services with `make run`, open your browser and navigate to `
 - `make restart` - Restart all services.
 - `make logs` - View output from containers.
 - `make ps` - List containers.
+- `make run` - Start the local Docker Compose setup and show logs.
+
+These commands are specific to ARM Docker Compose,
+
+- `make arm-run` - Start the ARM Docker Compose setup and show logs.
+- `make arm-logs` - Show logs for the ARM Docker Compose setup.
+- `make arm-restart` - Restart all services for ARM Docker Compose
+
+These commands are specific to Saltbox
+
 - `make saltbox-run` - Start the Saltbox Docker Compose setup and show logs. (Uses Traefik)
 - `make saltbox-logs` - Show logs for the Saltbox Docker Compose setup. (Uses Traefik)
+- `make saltbox-restart` - Restart all services for Saltbox Docker Compose
+
 
 For a full list of available commands, you can type:
 

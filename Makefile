@@ -40,6 +40,7 @@ build: prepare-network  ## Build or rebuild services from local compose
 .PHONY: up
 up: prepare-network  ## Create and start containers from local compose
 	$(DOCKER_COMPOSE_CMD) -f $(LOCAL_COMPOSE_FILE) up -d
+	$(DOCKER_COMPOSE_CMD) -f $(LOCAL_COMPOSE_FILE) logs -f -t
 
 .PHONY: down
 down:  ## Stop and remove containers, networks from local compose
