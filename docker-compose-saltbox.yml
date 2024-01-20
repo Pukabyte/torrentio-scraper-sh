@@ -3,7 +3,7 @@ version: '3.9'
 services:
   mongodb:
     restart: unless-stopped
-    image: mysql/mysql-server:8.0.23
+    image: bitnami/mongodb:7.0.5
     container_name: torrentio-mongodb
     ports:
       - "27017:27017"
