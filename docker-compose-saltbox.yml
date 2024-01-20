@@ -1,19 +1,20 @@
 version: '3.9'
-name: torrentio-sh
 
 services:
   mongodb:
     restart: unless-stopped
-    image: docker.io/bitnami/mongodb:7.0
+    image: bitnami/mongodb:7.0.5
+    container_name: torrentio-mongodb
     ports:
       - "27017:27017"
     volumes:
-      - /opt/torrentio-scraper-sh/mongodb:/bitnami/mongodb'
+      - /opt/torrentio-scraper-sh/mongodb:/bitnami/mongodb
     networks:
       - saltbox
 
   scraper:
     build: ./scraper
+    container_name: torrentio-scraper
     restart: unless-stopped
     ports:
       - "7001:7001"
@@ -27,6 +28,7 @@ services:
 
   torrentio:
     build: ./addon
+    container_name: torrentio
     restart: unless-stopped
     ports:
       - "7000:7000"
@@ -53,6 +55,7 @@ services:
 
   postgres:
     image: postgres:14-alpine
+    container_name: torrentio-pgdb
     restart: unless-stopped
     ports:
       - 5432:5432

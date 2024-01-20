@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+  mongodb:
+    restart: unless-stopped
+    image: bitnami/mongodb:7.0.5
+    container_name: torrentio-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb:/bitnami/mongodb
+    networks:
+      - torrentio
+
+  scraper:
+    build: ./scraper
+    restart: unless-stopped
+    container_name: torrentio-scraper
+    ports:
+      - "7001:7001"
+    environment:
+      - PORT=7001
+      - MONGODB_URI=mongodb://mongodb:27017/torrentio
+      - DATABASE_URI=postgres://postgres@postgres:5432/torrentio
+      - ENABLE_SYNC=true
+    networks:
+      - torrentio
+
+  torrentio:
+    build: ./addon
+    restart: unless-stopped
+    container_name: torrentio
+    ports:
+      - "7000:7000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/torrentio
+      - DATABASE_URI=postgres://postgres@postgres:5432/torrentio
+      - ENABLE_SYNC=true
+    networks: 
+      - torrentio
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: torrentio-pgdb
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=torrentio
+    networks: 
+      - torrentio
+
+networks: 
+  torrentio:
+    external: true
