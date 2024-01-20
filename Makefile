@@ -71,3 +71,8 @@ saltbox-logs:  ## Show logs for saltbox docker-compose
 	@echo "Showing logs from saltbox docker-compose.yml..."
 	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) logs -f
 
+.PHONY: saltbox-restart
+saltbox-restart:  ## Restart all services for saltbox docker-compose
+	@echo "Restarting containers for saltbox docker-compose..."
+	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) down
+	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) up -d
