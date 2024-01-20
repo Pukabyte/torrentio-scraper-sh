@@ -15,6 +15,9 @@ services:
   scraper:
     build: ./scraper
     container_name: torrentio-scraper
+    depends_on:
+      - mongodb
+      - postgres
     restart: unless-stopped
     ports:
       - "7001:7001"
@@ -29,6 +32,9 @@ services:
   torrentio:
     build: ./addon
     container_name: torrentio
+    depends_on:
+      - mongodb
+      - postgres
     restart: unless-stopped
     ports:
       - "7000:7000"

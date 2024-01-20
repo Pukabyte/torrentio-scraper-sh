@@ -16,6 +16,9 @@ services:
     build: ./scraper
     restart: unless-stopped
     container_name: torrentio-scraper
+    depends_on:
+      - mysql
+      - postgres
     ports:
       - "7001:7001"
     environment:
@@ -30,6 +33,9 @@ services:
     build: ./addon
     restart: unless-stopped
     container_name: torrentio
+    depends_on:
+      - mysql
+      - postgres
     ports:
       - "7000:7000"
     environment:
