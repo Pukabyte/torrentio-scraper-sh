@@ -3,6 +3,7 @@
 **/.env
 mongodb/
 pg_data/
+mysql_data/
 docker-compose*
 LICENSE
 Makefile

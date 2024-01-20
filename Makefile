@@ -3,6 +3,7 @@
 # Variables
 LOCAL_COMPOSE_FILE := docker-compose-local.yml
 SALTBOX_COMPOSE_FILE := docker-compose-saltbox.yml
+ARM_COMPOSE_FILE := docker-compose-arm.yml
 NETWORK_NAME := torrentio
 
 # Help
@@ -58,20 +59,36 @@ ps:  ## List containers from local compose
 .PHONY: run
 run: up  ## Set up everything and show logs from local compose
 	@echo "Starting containers and showing logs..."
-	$(DOCKER_COMPOSE_CMD) -f $(LOCAL_COMPOSE_FILE) logs -f
+	$(DOCKER_COMPOSE_CMD) -f $(LOCAL_COMPOSE_FILE) logs -f -t
 
 .PHONY: saltbox-run
 saltbox-run:  ## Start saltbox docker-compose and show logs
 	@echo "Starting containers from saltbox docker-compose.yml and showing logs..."
 	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) up -d
-	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) logs -f
+	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) logs -f -t
 
 .PHONY: saltbox-logs
 saltbox-logs:  ## Show logs for saltbox docker-compose
 	@echo "Showing logs from saltbox docker-compose.yml..."
-	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) logs -f
+	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) logs -f -t
 
 .PHONY: saltbox-restart
 saltbox-restart:  ## Restart all services for saltbox docker-compose
 	@echo "Restarting containers for saltbox docker-compose..."
 	$(DOCKER_COMPOSE_CMD) -f $(SALTBOX_COMPOSE_FILE) restart
+
+.PHONY: arm-run
+arm-run:  ## Start arm docker-compose and show logs
+	@echo "Starting containers from arm docker-compose.yml and showing logs..."
+	$(DOCKER_COMPOSE_CMD) -f $(ARM_COMPOSE_FILE) up -d
+	$(DOCKER_COMPOSE_CMD) -f $(ARM_COMPOSE_FILE) logs -f -t
+
+.PHONY: arm-logs
+arm-logs:  ## Show logs for arm docker-compose
+	@echo "Showing logs from arm docker-compose.yml..."
+	$(DOCKER_COMPOSE_CMD) -f $(ARM_COMPOSE_FILE) logs -f -t
+
+.PHONY: arm-restart
+arm-restart:  ## Restart all services for arm docker-compose
+	@echo "Restarting containers for arm docker-compose..."
+	$(DOCKER_COMPOSE_CMD) -f $(ARM_COMPOSE_FILE) restart
