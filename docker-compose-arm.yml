@@ -8,12 +8,11 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
-    environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
     networks:
       - torrentio
 
