@@ -6,7 +6,7 @@ const Promises = require('../../lib/promises');
 const { parseSize } = require("../scraperHelper");
 
 const defaultProxies = [
-  'https://katcr.co'
+  'https://kickasstorrents.to'
 ];
 const defaultTimeout = 10000;
 

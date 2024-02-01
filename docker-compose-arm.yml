@@ -1,0 +1,78 @@
+version: '3.9'
+
+services:
+  mysql:
+    restart: unless-stopped
+    image: arm64v8/mysql:8.0.36-oracle
+    container_name: torrentio-mysql
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - torrentio
+
+  scraper:
+    build: ./scraper
+    restart: unless-stopped
+    container_name: torrentio-scraper
+    depends_on:
+      - mysql
+      - postgres
+    ports:
+      - "7001:7001"
+    environment:
+      - PORT=7001
+      - MONGODB_URI=mysql://mysql:3306/torrentio
+      - DATABASE_URI=postgres://postgres@postgres:5432/torrentio
+      - ENABLE_SYNC=true
+      - PUID=1000
+      - PGID=1000
+    networks:
+      - torrentio
+
+  torrentio:
+    build: ./addon
+    restart: unless-stopped
+    container_name: torrentio
+    depends_on:
+      - mysql
+      - postgres
+    ports:
+      - "7000:7000"
+    environment:
+      - MONGODB_URI=mysql://mysql:3306/torrentio
+      - DATABASE_URI=postgres://postgres@postgres:5432/torrentio
+      - ENABLE_SYNC=true
+      - PUID=1000
+      - PGID=1000
+    networks: 
+      - torrentio
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: torrentio-pgdb
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=torrentio
+      - PUID=1000
+      - PGID=1000
+    networks: 
+      - torrentio
+
+networks: 
+  torrentio:
+    external: true
+
+volumes:
+  mysql-data:

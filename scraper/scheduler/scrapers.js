@@ -17,10 +17,21 @@ const nyaaSiScraper = require('../scrapers/nyaasi/nyaa_si_scraper');
 // const AnimesTorrent = require('../scrapers/animestorrent/animestorrent_scraper')
 // const DarkMahou = require('../scrapers/darkmahou/darkmahou_scraper')
 // const torrent9Scraper = require('../scrapers/torrent9/torrent9_scraper');
-
+const erairawsScraper = require('../scrapers/erairaws/erairaws_scraper');
+const torrentGalaxyScraper = require('../scrapers/torrentgalaxy/torrentgalaxy_scraper');
+const rutorScraper = require('../scrapers/rutor/rutor_scraper');
+const Comando = require('../scrapers/comando/comando_scraper')
+const ComoEuBaixo = require('../scrapers/comoeubaixo/comoeubaixo_scraper')
+const Lapumia = require('../scrapers/lapumia/lapumia_scraper')
+const OndeBaixa = require('../scrapers/ondebaixa/ondebaixa_scraper');
+const AnimesTorrent = require('../scrapers/animestorrent/animestorrent_scraper')
+const DarkMahou = require('../scrapers/darkmahou/darkmahou_scraper')
+const torrent9Scraper = require('../scrapers/torrent9/torrent9_scraper');
+const KickassScraper = require('../scrapers/kickass/kickass_scraper');
 module.exports = [
   { scraper: ytsScraper, name: ytsScraper.NAME, cron: '0 0 */4 ? * *' },
   { scraper: ytsFullScraper, name: ytsFullScraper.NAME, cron: '0 0 0 * * 0' },
+  { scraper: KickassScraper, name: KickassScraper.NAME, cron: '0 0 */4 ? * *' },
   { scraper: eztvScraper, name: eztvScraper.NAME, cron: '0 0 */4 ? * *' },
   { scraper: nyaaSiScraper, name: nyaaSiScraper.NAME, cron: '0 0 */4 ? * *' },
   { scraper: nyaaPantsuScraper, name: nyaaPantsuScraper.NAME, cron: '0 0 */4 ? * *' },

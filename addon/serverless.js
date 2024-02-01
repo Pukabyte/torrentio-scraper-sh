@@ -1,6 +1,5 @@
 import Router from 'router';
 import cors from 'cors';
-import rateLimit from "express-rate-limit";
 import requestIp from 'request-ip';
 import userAgentParser from 'ua-parser-js';
 import addonInterface from './addon.js';
@@ -11,21 +10,16 @@ import landingTemplate from './lib/landingTemplate.js';
 import * as moch from './moch/moch.js';
 
 const router = new Router();
-const limiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 300, // limit each IP to 300 requests per windowMs
-  headers: false,
-  keyGenerator: (req) => requestIp.getClientIp(req)
-})
 
-router.use(cors())
+router.use(cors());
+
 router.get('/', (_, res) => {
-  res.redirect('/configure')
+  res.redirect('/configure');
   res.end();
 });
 
 router.get(`/:preconfiguration(${Object.keys(PreConfigurations).join('|')})`, (req, res) => {
-  res.redirect(`/${req.params.preconfiguration}/configure`)
+  res.redirect(`/${req.params.preconfiguration}/configure`);
   res.end();
 });
 
@@ -40,12 +34,12 @@ router.get('/:configuration?/manifest.json', (req, res) => {
   const configValues = parseConfiguration(req.params.configuration || '');
   const manifestBuf = JSON.stringify(manifest(configValues));
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(manifestBuf)
+  res.end(manifestBuf);
 });
 
-router.get('/:configuration?/:resource/:type/:id/:extra?.json', limiter, (req, res, next) => {
+router.get('/:configuration?/:resource/:type/:id/:extra?.json', (req, res, next) => {
   const { configuration, resource, type, id } = req.params;
-  const extra = req.params.extra ? qs.parse(req.url.split('/').pop().slice(0, -5)) : {}
+  const extra = req.params.extra ? qs.parse(req.url.split('/').pop().slice(0, -5)) : {};
   const ip = requestIp.getClientIp(req);
   const host = `${req.protocol}://${req.headers.host}`;
   const configValues = { ...extra, ...parseConfiguration(configuration), id, type, ip, host };
@@ -67,7 +61,7 @@ router.get('/:configuration?/:resource/:type/:id/:extra?.json', limiter, (req, r
       .catch(err => {
         if (err.noHandler) {
           if (next) {
-            next()
+            next();
           } else {
             res.writeHead(404);
             res.end(JSON.stringify({ err: 'not found' }));
@@ -91,7 +85,7 @@ router.get('/:moch/:apiKey/:infoHash/:cachedEntryInfo/:fileIndex/:filename?', (r
     ip: requestIp.getClientIp(req),
     host: `${req.protocol}://${req.headers.host}`,
     isBrowser: !userAgent.includes('Stremio') && !!userAgentParser(userAgent).browser.name
-  }
+  };
   moch.resolve(parameters)
       .then(url => {
         res.writeHead(302, { Location: url });
