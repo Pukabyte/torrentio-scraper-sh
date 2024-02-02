@@ -7,9 +7,8 @@ const STREAM_KEY_PREFIX = `${GLOBAL_KEY_PREFIX}|stream`;
 const AVAILABILITY_KEY_PREFIX = `${GLOBAL_KEY_PREFIX}|availability`;
 const RESOLVED_URL_KEY_PREFIX = `${GLOBAL_KEY_PREFIX}|resolved`;
 
-const STREAM_TTL = process.env.STREAM_TTL || 24 * 60 * 60; // 24 hours
+const STREAM_TTL = process.env.STREAM_TTL || 4 * 60 * 60; // 4 hours
 const STREAM_EMPTY_TTL = process.env.STREAM_EMPTY_TTL || 60; // 1 minute
-const RESOLVED_URL_TTL = 3 * 60 * 60; // 3 hours
 const AVAILABILITY_TTL = 8 * 60 * 60; // 8 hours
 const AVAILABILITY_EMPTY_TTL = 30 * 60; // 30 minutes
 const MESSAGE_VIDEO_URL_TTL = 60; // 1 minutes
@@ -30,8 +29,7 @@ function initiateRemoteCache() {
       uri: MONGO_URI,
       options: {
         collection: 'torrentio_addon_collection',
-        socketTimeoutMS: 30000,
-        poolSize: 200,
+        socketTimeoutMS: 120000,
         useNewUrlParser: true,
         useUnifiedTopology: false,
         ttl: STREAM_EMPTY_TTL
@@ -69,8 +67,8 @@ export function cacheWrapStream(id, method) {
 }
 
 export function cacheWrapResolvedUrl(id, method) {
-  return cacheWrap(remoteCache, `${RESOLVED_URL_KEY_PREFIX}:${id}`, method, {
-    ttl: (url) => isStaticUrl(url) ? MESSAGE_VIDEO_URL_TTL : RESOLVED_URL_TTL
+  return cacheWrap(memoryCache, `${RESOLVED_URL_KEY_PREFIX}:${id}`, method, {
+    ttl: (url) => isStaticUrl(url) ? MESSAGE_VIDEO_URL_TTL : STREAM_TTL
   });
 }
 

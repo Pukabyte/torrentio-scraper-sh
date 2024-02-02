@@ -1,3 +1,4 @@
+import Bottleneck from 'bottleneck';
 import { addonBuilder } from 'stremio-addon-sdk';
 import { Type } from './lib/types.js';
 import { dummyManifest } from './lib/manifest.js';
@@ -8,8 +9,6 @@ import applySorting from './lib/sort.js';
 import applyFilters from './lib/filter.js';
 import { applyMochs, getMochCatalog, getMochItemMeta } from './moch/moch.js';
 import StaticLinks from './moch/static.js';
-import { createNamedQueue } from "./lib/namedQueue.js";
-import pLimit from "p-limit";
 
 const CACHE_MAX_AGE = parseInt(process.env.CACHE_MAX_AGE) || 60 * 60; // 1 hour in seconds
 const CACHE_MAX_AGE_EMPTY = 60; // 60 seconds
@@ -18,15 +17,21 @@ const STALE_REVALIDATE_AGE = 4 * 60 * 60; // 4 hours
 const STALE_ERROR_AGE = 7 * 24 * 60 * 60; // 7 days
 
 const builder = new addonBuilder(dummyManifest());
-const requestQueue = createNamedQueue(Infinity);
-const newLimiter = pLimit(30)
+const limiter = new Bottleneck({
+  maxConcurrent: process.env.LIMIT_MAX_CONCURRENT || 200,
+  highWater: process.env.LIMIT_QUEUE_SIZE || 220,
+  strategy: Bottleneck.strategy.OVERFLOW
+});
 
 builder.defineStreamHandler((args) => {
   if (!args.id.match(/tt\d+/i) && !args.id.match(/kitsu:\d+/i)) {
     return Promise.resolve({ streams: [] });
   }
 
-  return requestQueue.wrap(args.id, () => resolveStreams(args))
+  return cacheWrapStream(args.id, () => limiter.schedule(() => streamHandler(args)
+      .then(records => records
+          .sort((a, b) => b.torrent.seeders - a.torrent.seeders || b.torrent.uploadDate - a.torrent.uploadDate)
+          .map(record => toStreamInfo(record)))))
       .then(streams => applyFilters(streams, args.extra))
       .then(streams => applySorting(streams, args.extra, args.type))
       .then(streams => applyStaticInfo(streams))
@@ -63,15 +68,7 @@ builder.defineMetaHandler((args) => {
       });
 })
 
-async function resolveStreams(args) {
-  return cacheWrapStream(args.id, () => newLimiter(() => streamHandler(args)
-      .then(records => records
-          .sort((a, b) => b.torrent.seeders - a.torrent.seeders || b.torrent.uploadDate - a.torrent.uploadDate)
-          .map(record => toStreamInfo(record)))));
-}
-
 async function streamHandler(args) {
-  // console.log(`Pending count: ${newLimiter.pendingCount}, active count: ${newLimiter.activeCount}`, )
   if (args.type === Type.MOVIE) {
     return movieRecordsHandler(args);
   } else if (args.type === Type.SERIES) {
